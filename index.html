@@ -2246,6 +2246,7 @@
   /* метрики макетов с тулбаром в шапке: шапка 0/12/0/16, правый рейл 52, закреплённый тулбар в листе */
   .mode-header .sheet-tb{background:var(--tb)}
   .mode-header.tbc-violet .sheet-tb{background:var(--info-bg)}
+  .mode-header.tbc-violet .ftb .sep i{background:var(--extra-separator_color)} /* Extra/separator_color: #000 4% */
   .mode-header.tbc-none .sheet-tb{background:#fff}
   /* заголовок документа не прыгает при закреплении: в шапке без тулбара на листе резервируем его высоту */
   .mode-header .sheet-tb.hidden + .scroll{padding-top:40px}
@@ -2353,11 +2354,11 @@
   /* ховер круглый со всех сторон и вписан в пилюлю: пилюля 36 (радиус 18) − отступ 2 = 16: ховер вписан в пилюлю */
   .htb.round .ib{width:32px;height:32px;border-radius:16px}
   .htb.round .act{border-radius:28px;padding:0}
-  .htb.square{background:var(--info-bg);box-shadow:0 0 0 1px rgba(123,98,248,.15);border-radius:6px;height:32px;gap:0;align-items:stretch}
+  .htb.square{background:var(--info-bg);border-radius:6px;height:32px;gap:0;align-items:stretch}
   .htb.square .ib{width:36px;height:32px;border-radius:0;margin-top:0}
   .htb.square .ib:first-child{border-radius:6px 0 0 6px}
   .htb.square .dv{width:5px;display:flex;justify-content:center}
-  .htb.square .dv i{display:block;width:1px;height:32px;background:rgba(123,98,248,.15)}
+  .htb.square .dv i{display:block;width:1px;height:32px;background:var(--extra-separator_color)}
   .htb.square .ib:last-child{border-radius:0 6px 6px 0}
   /* «как сейчас»: те же три группы, но скругление 14; ховер кнопки 12 = 14 − отступ 2, вписан в группу */
   .htb.round.soft .part{border-radius:14px}
@@ -2366,11 +2367,11 @@
   /* круглый серый: пилюли цвета закреплённого тулбара */
   .htb.round.grey .part,.htb.round.softgrey .part{background:var(--tb)}
   .htb.round.softwhite .part,.htb.round.rwhite .part{background:#fff}
-  .htb.square.sqwhite{background:#fff;box-shadow:none}
+  .htb.square.sqwhite{background:#fff}
   .htb.square.sqwhite .dv i{background:rgba(0,0,0,.08)}
   /* квадратный серый: та же рамка, фон --tb, разделители как в шапке */
-  .htb.square.grey{background:var(--tb);box-shadow:none}
-  .htb.square.grey .dv i{background:rgba(0,0,0,.08)}
+  .htb.square.grey{background:var(--tb)}
+  .htb.square.grey .dv i{background:var(--extra-unaccented_separator_color)}
 
   /* документ */
   .doc-body{margin:0 auto;padding:12px 0 28px;color:#000;letter-spacing:0}
@@ -2892,17 +2893,17 @@ $('scene').append(frame.root);   /* рамка внутрь сцены, чтоб
 /* ---- окно настроек ---- */
 const SETTINGS = [
   { key:'place', opts:[ { v:'current', t:'Как сейчас' } ] },
-  { key:'place', group:'Варианты оформления', opts:[
+  { key:'place', group:'Расположение', opts:[
       { v:'header', t:'В шапке' },
       { v:'nobg', t:'Без фона' } ] },
   { key:'nobg', onlyNobg:true, opts:[ { v:'grey', t:'На фоне окна' }, { v:'white', t:'На документе' } ] },
-  { key:'color', group:'Цвет', row:true, onlyHeader:true, opts:[ { v:'grey', t:'Серый' }, { v:'violet', t:'Фиолетовый' }, { v:'none', t:'Без цвета' } ] },
+  { key:'color', group:'Цвет', row:true, onlyHeader:true, opts:[ { v:'grey', t:'Серый' }, { v:'violet', t:'Фиолетовый' }, { v:'none', t:'Белый' } ] },
   { key:'form', group:'Форма', row:true, onlyHeader:true, opts:[ { v:'soft', t:'Полукруглая' }, { v:'round', t:'Круглая' }, { v:'square', t:'Квадратная' } ] },
-  { key:'collapse', switch:true },
+  { key:'collapse', switch:true, text:'Сворачивание тулбара' },
 ];
 const rb = (attrs, text) => `<button class="sx-radio" type="button" role="radio" ${attrs}><span class="df-radio__box"></span><span class="df-radio__text">${text}</span></button>`;
 const settingsCard = document.createElement('div'); settingsCard.className = 'df-card df-card--scen'; settingsCard.id = 'settings';
-settingsCard.innerHTML = SETTINGS.map(s => s.switch ? `<div class="df-options sx-sec-collapse"><button class="sx-switch" type="button" role="switch" data-key="collapse"><span class="sx-sw"></span><span class="df-radio__text">Сворачивание тулбара</span></button></div>` : `${s.group?`<div class="df-group sx-sec-${s.key}">${s.group}</div>`:''}<div class="df-options${s.row?' sx-row':''}${s.onlyHeader||s.onlyNobg?' sx-sec-'+s.key:''}">` +
+settingsCard.innerHTML = SETTINGS.map(s => s.switch ? `<div class="df-options sx-sec-${s.key}"><button class="sx-switch" type="button" role="switch" data-key="${s.key}"><span class="sx-sw"></span><span class="df-radio__text">${s.text}</span></button></div>` : `${s.group?`<div class="df-group sx-sec-${s.key}">${s.group}</div>`:''}<div class="df-options${s.row?' sx-row':''}${s.onlyHeader||s.onlyNobg?' sx-sec-'+s.key:''}">` +
   s.opts.map(o => rb(`data-key="${s.key}" data-v="${o.v}"`, o.t) + (o.sub ? `<div class="df-sub">${o.sub.map(x=>rb(`data-key="${x.k}" data-v="${x.v}"`, x.t)).join('')}</div>` : '')).join('') + `</div>`).join('');
 frame.panel.firstElementChild.append(settingsCard);
 
@@ -2922,7 +2923,7 @@ function syncPanel(){
   const coll = st.mode==='header' || (st.mode==='nobg' && st.collapse);
   settingsCard.querySelectorAll('.sx-sec-color').forEach(e => e.classList.toggle('hidden', st.mode!=='header'));
   settingsCard.querySelectorAll('.sx-sec-form').forEach(e => e.classList.toggle('hidden', st.mode!=='header'));
-  const swb = settingsCard.querySelector('.sx-switch'); swb.classList.toggle('is-on', coll); swb.setAttribute('aria-checked', coll);
+  const swc = settingsCard.querySelector('.sx-switch[data-key=collapse]'); swc.classList.toggle('is-on', coll); swc.setAttribute('aria-checked', coll);
   settingsCard.querySelectorAll('.sx-sec-collapse').forEach(e => e.classList.toggle('hidden', st.mode!=='nobg'));
   settingsCard.querySelectorAll('.sx-sec-nobg').forEach(e => e.classList.toggle('hidden', st.mode!=='nobg'));
   const cur = { place: st.mode, nobg: st.nobg, color: st.color, form: st.form };
