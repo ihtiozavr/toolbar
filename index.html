@@ -2245,6 +2245,8 @@
 
   /* метрики макетов с тулбаром в шапке: шапка 0/12/0/16, правый рейл 52, закреплённый тулбар в листе */
   .mode-header .sheet-tb{background:var(--tb)}
+  .mode-header.tbc-violet .sheet-tb{background:var(--info-bg)}
+  .mode-header.tbc-none .sheet-tb{background:#fff}
   /* заголовок документа не прыгает при закреплении: в шапке без тулбара на листе резервируем его высоту */
   .mode-header .sheet-tb.hidden + .scroll{padding-top:40px}
   svg{display:block}
@@ -2812,7 +2814,7 @@ const $ = id => document.getElementById(id);
 
 function render(){
   const win=$('win'), strip=$('strip'), sheetTb=$('sheetTb');
-  win.classList.remove('mode-current','mode-white','mode-grey','mode-header'); win.classList.toggle('shape-square', st.shape==='square');
+  win.classList.remove('mode-current','mode-white','mode-grey','mode-header','tbc-grey','tbc-violet','tbc-none'); win.classList.toggle('shape-square', st.shape==='square');
   strip.classList.add('collapsed'); strip.innerHTML='';
   sheetTb.classList.add('hidden'); sheetTb.innerHTML=''; sheetTb.classList.remove('scrolled');
   let center = '';
@@ -2841,7 +2843,7 @@ function render(){
     }
     $('desc').innerHTML=DESC['nobg-'+st.nobg];
   } else {
-    win.classList.add('mode-header');
+    win.classList.add('mode-header','tbc-'+(SHAPE2FC[st.shape]||{color:'grey'}).color);
     center = headerToolbar(st.shape);
     if(st.pinned){ sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(true); center=''; }
     $('desc').innerHTML=DESC.header;
