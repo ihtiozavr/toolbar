@@ -2306,9 +2306,26 @@
   .sheet-tb{display:flex;align-items:center;height:40px;flex:0 0 40px;padding:0 4px 0 16px;position:relative;z-index:2}
   .mode-current .sheet-tb{background:var(--tb)}
   .mode-white .sheet-tb{background:#fff}
+  /* переключатели окна настроек (как df-radio из ui-kit) */
+  #settings{gap:4px}
+.sx-switch{display:flex;align-items:center;gap:8px;width:100%;padding:0;background:none;border:0;cursor:pointer;font:inherit;text-align:left}
+.sx-sw{position:relative;flex:none;width:var(--components-toggle-switcher-width_switcher);height:var(--components-toggle-switcher-height_horizontal_switcher);margin:4px 0;border-radius:var(--components-toggle-switcher-border-radius_switcher);background:var(--border-unaccented_border-color);transition:background .15s}
+.sx-sw::after{content:'';position:absolute;left:2px;top:2px;width:var(--components-toggle-switcher-marker_size_switcher);height:var(--components-toggle-switcher-marker_size_switcher);border-radius:50%;background:var(--components-toggle-marker_contrast-color_switcher);transition:transform .15s}
+.sx-switch.is-on .sx-sw{background:var(--background-contrast-primary_color)}
+.sx-switch.is-on .sx-sw::after{transform:translateX(8px)}
+.sx-switch .df-radio__text{color:var(--components-toggle-selected_text-color_switcher)}
+  #settings .df-options.sx-row{flex-direction:row;flex-wrap:wrap;gap:2px 16px}
+  .sx-radio{display:flex;align-items:flex-start;text-align:left;font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer}
+  .sx-radio.is-on .df-radio__box::before{border-color:var(--background-contrast-primary_color);background:var(--background-contrast-primary_color);box-shadow:inset 0 0 0 1px var(--background-background-color)}
+  .sx-radio.is-on,.sx-radio:disabled{cursor:default}
+  .sx-radio.is-on .df-radio__text{color:var(--components-toggle-selected_text-color_switcher)}
+  .sx-radio:not(.is-on,:disabled):hover .df-radio__box::before{border-color:var(--background-contrast-primary_color)}
+  .sx-radio:not(.is-on,:disabled):hover .df-radio__text{text-decoration:underline}
+  .sx-radio.is-dim{opacity:.4} /* неактивно, но клик переключает на «В шапке» */
+  .sx-radio.is-dim:hover{opacity:.7}
   .df-subgroup{padding:4px 0 2px;font-size:12px;line-height:15px;letter-spacing:-.1692px;text-transform:uppercase;color:var(--text-label_text-color)}
   .df-subgroup:not(:first-child){padding-top:10px}
-  .df-row{display:flex;gap:20px}
+  .df-row{display:flex;gap:20px;flex-wrap:wrap}
   .df-devices{padding-top:8px}
   .sheet-tb.scrolled{box-shadow:0 6px 12px rgba(15,15,15,.1),0 3px 6px rgba(15,15,15,.05),0 0 0 1px rgba(15,15,15,.02)} /* Shadow_default из библиотеки */
   .scroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative}
@@ -2340,8 +2357,15 @@
   .htb.square .dv{width:5px;display:flex;justify-content:center}
   .htb.square .dv i{display:block;width:1px;height:32px;background:rgba(123,98,248,.15)}
   .htb.square .ib:last-child{border-radius:0 6px 6px 0}
+  /* «как сейчас»: те же три группы, но скругление 14; ховер кнопки 12 = 14 − отступ 2, вписан в группу */
+  .htb.round.soft .part{border-radius:14px}
+  .htb.round.soft .ib{border-radius:12px}
+  .htb.round.soft .act{border-radius:14px}
   /* круглый серый: пилюли цвета закреплённого тулбара */
-  .htb.round.grey .part{background:var(--tb)}
+  .htb.round.grey .part,.htb.round.softgrey .part{background:var(--tb)}
+  .htb.round.softwhite .part,.htb.round.rwhite .part{background:#fff}
+  .htb.square.sqwhite{background:#fff;box-shadow:none}
+  .htb.square.sqwhite .dv i{background:rgba(0,0,0,.08)}
   /* квадратный серый: та же рамка, фон --tb, разделители как в шапке */
   .htb.square.grey{background:var(--tb);box-shadow:none}
   .htb.square.grey .dv i{background:rgba(0,0,0,.08)}
@@ -2746,8 +2770,8 @@ function fullToolbar(withCollapse){
 function headerToolbar(shape){
   const mid = ['ul','ol','check','link','cols','table','emoji','info','more'];
   const tips = {ul:'Маркированный список',ol:'Нумерованный список',check:'Чек-лист',link:'Ссылка',cols:'Колонки',table:'Таблица',emoji:'Эмодзи',info:'Инфоблок',more:'Ещё'};
-  if (shape==='round' || shape==='grey'){
-    return `<div class="htb round${shape==='grey'?' grey':''}">
+  if (shape==='round' || shape==='grey' || shape==='soft' || shape==='softgrey' || shape==='softwhite' || shape==='rwhite'){
+    return `<div class="htb round${shape==='grey'?' grey':''}${shape==='soft'||shape==='softgrey'||shape==='softwhite'?' soft':''}${shape==='softgrey'?' softgrey':''}${shape==='softwhite'?' softwhite':''}${shape==='rwhite'?' rwhite':''}">
       <div class="part">${btn('Aa','Стиль текста')}${btn('T','Форматирование')}</div>
       <div class="part">${mid.map(k=>btn(k,tips[k])).join('')}</div>
       <div class="part">${btn('ai','Нейросеть')}${btn('mic','Диктовка')}</div>
@@ -2755,7 +2779,7 @@ function headerToolbar(shape){
     </div>`;
   }
   const dv = '<span class="dv"><i></i></span>';
-  return `<div class="htb square${shape==='sqgrey'?' grey':''}">
+  return `<div class="htb square${shape==='sqgrey'?' grey':''}${shape==='sqwhite'?' sqwhite':''}">
     ${btn('Aa','Стиль текста')}${btn('T','Форматирование')}${dv}
     ${mid.map(k=>btn(k,tips[k])).join('')}${dv}
     ${btn('ai','Нейросеть')}${btn('mic','Диктовка')}${dv}
@@ -2776,7 +2800,7 @@ document.getElementById('railR').innerHTML = `
 document.getElementById('toc').innerHTML = [20,20,20,16,16,16,20,20,20,16,12,16].map(w=>`<i style="width:${w}px"></i>`).join('');
 
 /* ---------- Состояние ---------- */
-const st = { mode:'current', nobg:'grey', shape:'round', pinned:false, tocPinned:false, widPinned:false };
+const st = { mode:'header', nobg:'grey', shape:'softgrey', color:'grey', form:'soft', collapse:false, pinned:false, tocPinned:false, widPinned:false };
 
 const DESC = {
   current:`<p><b>Как сейчас.</b> Тулбар лежит на отдельной <b>серой подложке</b> внутри листа документа — отдельная плашка между шапкой и текстом.</p>`,
@@ -2795,19 +2819,25 @@ function render(){
 
 
   let badge='';
-  if(st.mode==='current'){
+  const coll = st.mode==='header' || (st.mode==='nobg' && st.collapse);
+  const cstr = coll ? ' · сворачивается' : '';
+  if(st.mode!=='header' && coll && !st.pinned){
+    win.classList.add('mode-header'); center = headerToolbar(st.mode==='nobg' ? (st.nobg==='white'?'softwhite':'softgrey') : st.shape);
+    $('desc').innerHTML=DESC.header;
+    badge=({current:'Как сейчас',nobg:'Без фона · '+(st.nobg==='grey'?'на фоне окна':'на листе')}[st.mode])+' · свёрнут в шапку';
+  } else if(st.mode==='current'){
     win.classList.add('mode-current');
-    sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(false);
-    $('desc').innerHTML=DESC.current; badge='Как сейчас';
+    sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(coll);
+    $('desc').innerHTML=DESC.current; badge='Как сейчас'+(coll?' · развёрнут':'');
   } else if(st.mode==='nobg'){
     if(st.nobg==='grey'){
       win.classList.add('mode-grey');
-      strip.innerHTML=fullToolbar(false); strip.classList.remove('collapsed');
-      badge='Без фона · на фоне окна';
+      strip.innerHTML=fullToolbar(coll); strip.classList.remove('collapsed');
+      badge='Без фона · на фоне окна'+(coll?' · развёрнут':'');
     } else {
       win.classList.add('mode-white');
-      sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(false);
-      badge='Без фона · на листе';
+      sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(coll);
+      badge='Без фона · на листе'+(coll?' · развёрнут':'');
     }
     $('desc').innerHTML=DESC['nobg-'+st.nobg];
   } else {
@@ -2815,7 +2845,7 @@ function render(){
     center = headerToolbar(st.shape);
     if(st.pinned){ sheetTb.classList.remove('hidden'); sheetTb.innerHTML=fullToolbar(true); center=''; }
     $('desc').innerHTML=DESC.header;
-    badge='В шапке · '+({round:'круглый фиолетовый',square:'квадратный фиолетовый',grey:'круглый серый',sqgrey:'квадратный серый'}[st.shape])+' · '+(st.pinned?'закреплён':'свёрнут');
+    badge='В шапке · '+({round:'круглый фиолетовый',square:'квадратный фиолетовый',grey:'круглый серый',sqgrey:'квадратный серый',soft:'как сейчас, 14px, фиолетовый',softgrey:'как сейчас, 14px, серый',softwhite:'как сейчас, 14px, белый',rwhite:'круглый белый',sqwhite:'квадратный белый'}[st.shape])+' · '+(st.pinned?'закреплён':'свёрнут');
   }
   win.classList.toggle('toc-pinned',st.tocPinned); win.classList.toggle('wid-pinned',st.widPinned);
   if(st.tocPinned) win.classList.remove('toc-hover');
@@ -2828,24 +2858,19 @@ function render(){
 
   syncPanel();
 
-  const h = st.mode==='header' ? `header-${st.shape==='sqgrey'?'square-grey':st.shape}` : st.mode==='nobg' ? `nobg-${st.nobg}` : 'current';
+  const h = st.mode==='header' ? `header-${SHAPE2HASH[st.shape]||st.shape}` : st.mode==='nobg' ? `nobg-${st.nobg}` : 'current';
   if(location.hash.slice(1)!==h){ try{ history.replaceState(null,'','#'+h);}catch(e){} }
 }
 
-/* ---------- Системная область: DemoFrame из ui-kit ---------- */
-/* Один выбор на всю панель; блоки: «Как сейчас», «Эксперименты с фоном», «Тулбар в шапке» (подзаголовки «круглый» / «квадратный») */
-const ID2ST = {
-  'current':         { mode:'current' },
-  'nobg':            { mode:'nobg', nobg:'grey' },
-  'nobg-white':      { mode:'nobg', nobg:'white' },
-  'hdr-round-grey':  { mode:'header', shape:'grey' },
-  'hdr-round':       { mode:'header', shape:'round' },
-  'hdr-square-grey': { mode:'header', shape:'sqgrey' },
-  'hdr-square':      { mode:'header', shape:'square' },
+/* ---------- Системная область: DemoFrame из ui-kit (устройство, команда) + свои настройки, как окно настроек ---------- */
+/* Расположение, цвет и форма выбираются независимо — любая комбинация. Цвет и форма работают для «В шапке». */
+const FORM_COLOR2SHAPE = {
+  soft:  { grey:'softgrey', violet:'soft',   none:'softwhite' },
+  round: { grey:'grey',     violet:'round',  none:'rwhite' },
+  square:{ grey:'sqgrey',   violet:'square', none:'sqwhite' },
 };
-const SHAPE2ID = { grey:'hdr-round-grey', round:'hdr-round', sqgrey:'hdr-square-grey', square:'hdr-square' };
-const curId = () => st.mode==='header' ? SHAPE2ID[st.shape]
-                  : st.mode==='nobg' ? (st.nobg==='white'?'nobg-white':'nobg') : 'current';
+const SHAPE2FC = {}; Object.entries(FORM_COLOR2SHAPE).forEach(([f,m])=>Object.entries(m).forEach(([c,s])=>SHAPE2FC[s]={form:f,color:c}));
+const SHAPE2HASH = { sqgrey:'square-grey', softgrey:'soft-grey', softwhite:'soft-white', rwhite:'round-white', sqwhite:'square-white' };
 fromHash();
 const frame = DemoFrame.mount({
   stage: $('stage'),
@@ -2854,37 +2879,59 @@ const frame = DemoFrame.mount({
     { id: 'monitor', icon: 'monitor', label: 'Монитор', size: '1600х900 рх', name: 'стандартный монитор' },
   ],
   device: 'monitor',
-  scenarios: [
-    { id: 'current', title: 'Как сейчас' },
-    { group: 'Эксперименты с фоном', items: [
-      { id: 'nobg', title: 'Без фона' },
-      { id: 'nobg-white', title: 'На документе' },
-    ] },
-    { group: 'Тулбар в шапке', items: [
-      { id: 'hdr-round-grey', title: 'Серый' },
-      { id: 'hdr-round', title: 'Фиолетовый' },
-      { id: 'hdr-square-grey', title: 'Серый' },
-      { id: 'hdr-square', title: 'Фиолетовый' },
-    ] },
-  ],
+  scenarios: [],
   team: [
     { label: 'Design', name: 'Мингазова Алина' },
   ],
-  value: { scenario: curId() },
-  onChange({ scenario }) { Object.assign(st, ID2ST[scenario]); render(); },
   onScale(k) { document.documentElement.style.setProperty('--k', k); },
 });
 $('scene').append(frame.root);   /* рамка внутрь сцены, чтобы прокручивалась вместе с ней */
-/* подзаголовки внутри белого облачка «Тулбар в шапке» */
-[['hdr-round-grey','Круглый'],['hdr-square-grey','Квадратный']].forEach(([id,title]) => {
-  const r = frame.panel.querySelector(`.df-radio[data-scenario="${id}"]`);
-  const h = document.createElement('div'); h.className = 'df-subgroup'; h.textContent = title; r.before(h);
-  /* «Серый» и «Фиолетовый» — в одну строку */
-  const row = document.createElement('div'); row.className = 'df-row';
-  const second = r.nextElementSibling;
-  r.before(row); row.append(r, second);
+
+/* ---- окно настроек ---- */
+const SETTINGS = [
+  { key:'place', opts:[ { v:'current', t:'Как сейчас' } ] },
+  { key:'place', group:'Варианты оформления', opts:[
+      { v:'header', t:'В шапке' },
+      { v:'nobg', t:'Без фона' } ] },
+  { key:'nobg', onlyNobg:true, opts:[ { v:'grey', t:'На фоне окна' }, { v:'white', t:'На документе' } ] },
+  { key:'color', group:'Цвет', row:true, onlyHeader:true, opts:[ { v:'grey', t:'Серый' }, { v:'violet', t:'Фиолетовый' }, { v:'none', t:'Без цвета' } ] },
+  { key:'form', group:'Форма', row:true, onlyHeader:true, opts:[ { v:'soft', t:'Полукруглая' }, { v:'round', t:'Круглая' }, { v:'square', t:'Квадратная' } ] },
+  { key:'collapse', switch:true },
+];
+const rb = (attrs, text) => `<button class="sx-radio" type="button" role="radio" ${attrs}><span class="df-radio__box"></span><span class="df-radio__text">${text}</span></button>`;
+const settingsCard = document.createElement('div'); settingsCard.className = 'df-card df-card--scen'; settingsCard.id = 'settings';
+settingsCard.innerHTML = SETTINGS.map(s => s.switch ? `<div class="df-options sx-sec-collapse"><button class="sx-switch" type="button" role="switch" data-key="collapse"><span class="sx-sw"></span><span class="df-radio__text">Сворачивание тулбара</span></button></div>` : `${s.group?`<div class="df-group sx-sec-${s.key}">${s.group}</div>`:''}<div class="df-options${s.row?' sx-row':''}${s.onlyHeader||s.onlyNobg?' sx-sec-'+s.key:''}">` +
+  s.opts.map(o => rb(`data-key="${s.key}" data-v="${o.v}"`, o.t) + (o.sub ? `<div class="df-sub">${o.sub.map(x=>rb(`data-key="${x.k}" data-v="${x.v}"`, x.t)).join('')}</div>` : '')).join('') + `</div>`).join('');
+frame.panel.firstElementChild.append(settingsCard);
+
+settingsCard.addEventListener('click', e => {
+  const sw = e.target.closest('.sx-switch');
+  if(sw){ st.collapse=!st.collapse; st.pinned=st.collapse; render(); return; }
+  const r = e.target.closest('.sx-radio'); if(!r) return;
+  const { key, v } = r.dataset;
+  if(key==='place'){ if(v!==st.mode){ st.collapse = false; st.pinned = false; } st.mode = v; }
+  else if(key==='nobg'){ st.mode = 'nobg'; st.nobg = v; }
+  else if(key==='color'){ st.color = v; st.shape = FORM_COLOR2SHAPE[st.form][v]; }
+  else if(key==='form'){ st.form = v; st.shape = FORM_COLOR2SHAPE[v][st.color]; }
+  render();
 });
-function syncPanel(){ if(frame.value.scenario !== curId()) frame.select(curId()); }
+function syncPanel(){
+  const fc = SHAPE2FC[st.shape] || { form:'soft', color:'grey' }; st.form = fc.form; st.color = fc.color;
+  const coll = st.mode==='header' || (st.mode==='nobg' && st.collapse);
+  settingsCard.querySelectorAll('.sx-sec-color').forEach(e => e.classList.toggle('hidden', st.mode!=='header'));
+  settingsCard.querySelectorAll('.sx-sec-form').forEach(e => e.classList.toggle('hidden', st.mode!=='header'));
+  const swb = settingsCard.querySelector('.sx-switch'); swb.classList.toggle('is-on', coll); swb.setAttribute('aria-checked', coll);
+  settingsCard.querySelectorAll('.sx-sec-collapse').forEach(e => e.classList.toggle('hidden', st.mode!=='nobg'));
+  settingsCard.querySelectorAll('.sx-sec-nobg').forEach(e => e.classList.toggle('hidden', st.mode!=='nobg'));
+  const cur = { place: st.mode, nobg: st.nobg, color: st.color, form: st.form };
+  settingsCard.querySelectorAll('.sx-radio').forEach(r => {
+    const { key, v } = r.dataset;
+    const on = key==='nobg' ? (st.mode==='nobg' && st.nobg===v) : cur[key]===v;
+    r.classList.toggle('is-on', on); r.setAttribute('aria-checked', on);
+    const sec = SETTINGS.find(s=>s.key===key && s.onlyHeader);
+    r.classList.remove('is-dim');
+  });
+}
 
 
 $('win').addEventListener('mousedown', e => {
@@ -2920,7 +2967,7 @@ function fromHash(){
   const h = location.hash.slice(1);
   if(h==='current') st.mode='current';
   else if(h.startsWith('nobg-')){ st.mode='nobg'; st.nobg = h.startsWith('nobg-white')?'white':'grey'; }
-  else if(h.startsWith('header-')){ st.mode='header'; st.shape = h==='header-square-grey'?'sqgrey':h==='header-square'?'square':h==='header-grey'?'grey':'round'; }
+  else if(h.startsWith('header-')){ st.mode='header'; st.shape = Object.keys(SHAPE2HASH).find(k=>'header-'+SHAPE2HASH[k]===h) || (h==='header-square'?'square':h==='header-grey'?'grey':'round'); }
 }
 window.addEventListener('hashchange', ()=>{ fromHash(); render(); });
 render();
